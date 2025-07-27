@@ -1,0 +1,15 @@
+{
+  "short_name": "Strap",
+  "name": "Strap - Treino de Academia",
+  "icons": [
+    {
+      "src": "icons/strap-icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50"
+}
