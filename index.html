@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strap</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      margin: 0;
+      padding: 1rem;
+      background: #f5f5f5;
+    }
+    h1, h2, h3 {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    .option-btn, .submit-btn {
+      padding: 1rem;
+      margin-top: 1rem;
+      width: 100%;
+      border-radius: 8px;
+      background: #4CAF50;
+      color: white;
+      font-size: 1.2rem;
+      border: none;
+      cursor: pointer;
+    }
+    .option-btn {
+      background-color: #007bff;
+    }
+    .input-group {
+      margin: 1rem 0;
+    }
+    select, input {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Strap</h1>
+    <div class="section">
+      <h2>Selecione o Tipo de Treino</h2>
+      <button class="option-btn" onclick="selectWorkoutType('livre')">Treino Livre</button>
+      <button class="option-btn" onclick="selectWorkoutType('montar')">Montar Treino</button>
+    </div>
+
+    <div id="workoutTypeSection" class="section" style="display: none;">
+      <h2>Escolha o Dia da Semana</h2>
+      <select id="daySelect">
+        <option value="segunda">Segunda-feira</option>
+        <option value="terca">Terça-feira</option>
+        <option value="quarta">Quarta-feira</option>
+        <option value="quinta">Quinta-feira</option>
+        <option value="sexta">Sexta-feira</option>
+        <option value="sabado">Sábado</option>
+        <option value="domingo">Domingo</option>
+      </select>
+      <button class="submit-btn" onclick="proceedWithWorkout()">Confirmar</button>
+    </div>
+
+    <div id="createWorkoutSection" class="section" style="display: none;">
+      <h2>Monte Seu Treino</h2>
+      <label>Nome do Exercício:</label>
+      <input type="text" id="exerciseName" placeholder="Ex: Supino Reto" />
+      <label>Quantidade de Séries:</label>
+      <input type="number" id="seriesCount" min="1" value="3" />
+      <button class="submit-btn" onclick="generateSeriesInputs()">Gerar Séries</button>
+      <div id="seriesInputs"></div>
+      <button class="submit-btn" onclick="saveWorkoutPlan()">Salvar Plano</button>
+    </div>
+  </div>
+
+  <script>
+    let workoutType = '';
+
+    function selectWorkoutType(type) {
+      workoutType = type;
+      document.getElementById('workoutTypeSection').style.display = 'block';
+      document.querySelector('.section').style.display = 'none';
+    }
+
+    function proceedWithWorkout() {
+      const day = document.getElementById('daySelect').value;
+      if (workoutType === 'livre') {
+        alert('Treino Livre selecionado. Agora você pode adicionar ou editar os exercícios conforme necessário.');
+      } else {
+        document.getElementById('createWorkoutSection').style.display = 'block';
+      }
+    }
+
+    function generateSeriesInputs() {
+      const container = document.getElementById('seriesInputs');
+      container.innerHTML = '';
+      const count = parseInt(document.getElementById('seriesCount').value);
+      for (let i = 0; i < count; i++) {
+        const div = document.createElement('div');
+        div.className = 'input-group';
+        div.innerHTML = `
+          <label>Série ${i + 1}</label>
+          <input placeholder="Peso (kg)" class="weight" type="number" />
+          <input placeholder="Repetições" class="reps" type="number" />
+          <input placeholder="Descanso (segundos)" class="rest" type="number" />
+        `;
+        container.appendChild(div);
+      }
+    }
+
+    function saveWorkoutPlan() {
+      const day = document.getElementById('daySelect').value;
+      const name = document.getElementById('exerciseName').value.trim();
+      const weights = [...document.querySelectorAll('.weight')].map(el => el.value);
+      const reps = [...document.querySelectorAll('.reps')].map(el => el.value);
+      const rests = [...document.querySelectorAll('.rest')].map(el => el.value);
+
+      const series = weights.map((_, i) => ({ weight: weights[i], reps: reps[i], rest: rests[i] }));
+
+      let saved = JSON.parse(localStorage.getItem('strap') || '{}');
+      if (!saved[day]) saved[day] = [];
+      saved[day].push({ name, series });
+      localStorage.setItem('strap', JSON.stringify(saved));
+      alert('Plano de treino salvo com sucesso!');
+    }
+  </script>
+</body>
+</html>
